@@ -1,5 +1,6 @@
 {
-    "editor.codeActionsOnSave": {
-      "source.fixAll.eslint": true
+    "files.associations": {
+        "*.rsh": "javascript"
     },
+    "javascript.suggest.completeFunctionCalls": true
 }

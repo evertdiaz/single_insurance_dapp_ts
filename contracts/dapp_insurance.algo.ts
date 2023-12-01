@@ -2,46 +2,115 @@ import { Contract } from '@algorandfoundation/tealscript';
 
 // eslint-disable-next-line no-unused-vars
 class DappInsurance extends Contract {
+  analyst = GlobalStateKey<Address>();
+
+  customer = GlobalStateKey<Address>();
+
+  assetName = GlobalStateKey<string>();
+
+  assetType = GlobalStateKey<string>();
+
+  asssetValue = GlobalStateKey<number>();
+
+  assetDescription = GlobalStateKey<string>();
+
+  assetStatus = GlobalStateKey<string>();
+
+  analystComments = GlobalStateKey<string>();
+
+  asaId = GlobalStateKey<Asset>();
+
   /**
-   * Calculates the sum of two numbers
+   * Creates the contract with initial addresses
    *
-   * @param a
-   * @param b
-   * @returns The sum of a and b
+   * @param analyst - The address of who will review and approve asset insurance
+   * @param customer - The address of the person who will request the asset insurance evaluation
+   * @returns void
+   *
    */
-  private getSum(a: number, b: number): number {
-    return a + b;
+
+  createApplication(analyst: Address, customer: Address): void {
+    this.analyst.value = analyst;
+    this.customer.value = customer;
+    this.assetStatus.value = 'none';
   }
 
   /**
-   * Calculates the difference between two numbers
+   * Allows customer to register an asset for insurance
    *
-   * @param a
-   * @param b
-   * @returns The difference between a and b.
+   * @param assetName - The name of the asset to insure
+   * @param assetType - The type of the asset to insure
+   * @param asssetValue - The value of the asset to insure
+   * @param assetDescription - The description of the asset to insure
+   * @returns void
+   *
    */
-  private getDifference(a: number, b: number): number {
-    return a >= b ? a - b : b - a;
+
+  registerAsset(assetName: string, assetType: string, assetValue: number, assetDescription: string): void {
+    verifyTxn(this.txn, { sender: this.customer.value });
+    assert(this.assetStatus.value === 'rejected' || this.assetStatus.value === 'none');
+    this.assetName.value = assetName;
+    this.assetType.value = assetType;
+    this.asssetValue.value = assetValue;
+    this.assetDescription.value = assetDescription;
+    this.assetStatus.value = 'requested';
   }
 
   /**
-   * A method that takes two numbers and does either addition or subtraction
+   * Allows customer to register an asset for insurance
    *
-   * @param a The first number
-   * @param b The second number
-   * @param operation The operation to perform. Can be either 'sum' or 'difference'
+   * @param acceptance - The boolean value of whether the asset is accepted or not
+   * @returns void
    *
-   * @returns The result of the operation
    */
-  doMath(a: number, b: number, operation: string): number {
-    let result: number;
 
-    if (operation === 'sum') {
-      result = this.getSum(a, b);
-    } else if (operation === 'difference') {
-      result = this.getDifference(a, b);
-    } else throw Error('Invalid operation');
+  reviewRequest(acceptance: boolean, comments: string): void {
+    verifyTxn(this.txn, { sender: this.analyst.value });
+    assert(
+      this.assetStatus.value === 'requested' ||
+        this.assetStatus.value === 'none' ||
+        this.assetStatus.value === 'rejected'
+    );
+    this.analystComments.value = comments;
+    if (acceptance) {
+      this.assetStatus.value = 'accepted';
+      const asaId = sendAssetCreation({
+        configAssetTotal: 1,
+        configAssetDecimals: 0,
+        configAssetName: this.assetName.value,
+        configAssetUnitName: 'INSUR',
+        note: 'Token for asset: ' + this.assetName.value,
+      });
+      this.asaId.value = asaId;
+    } else {
+      this.assetStatus.value = 'rejected';
+    }
+  }
 
-    return result;
+  /**
+   * Allows customer to register an asset for insurance
+   *
+   * @param asaId - The ID of the ASA to receive
+   * @param optin - The optin transaction to receive the ASA
+   * @returns void
+   *
+   */
+
+  receiveToken(asaId: Asset, optin: AssetTransferTxn): void {
+    verifyTxn(this.txn, { sender: this.customer.value });
+    verifyTxn(optin, {
+      sender: this.customer.value,
+      assetReceiver: this.customer.value,
+      xferAsset: asaId,
+      assetAmount: 0,
+    });
+    assert(this.asaId.value === asaId);
+    assert(this.assetStatus.value === 'accepted');
+    sendAssetTransfer({
+      assetReceiver: this.customer.value,
+      assetAmount: 1,
+      xferAsset: asaId,
+    });
+    this.assetStatus.value = 'insured';
   }
 }

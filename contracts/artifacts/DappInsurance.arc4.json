@@ -1,0 +1,96 @@
+{
+  "name": "DappInsurance",
+  "desc": "",
+  "methods": [
+    {
+      "name": "createApplication",
+      "args": [
+        {
+          "name": "analyst",
+          "type": "address",
+          "desc": "The address of who will review and approve asset insurance"
+        },
+        {
+          "name": "customer",
+          "type": "address",
+          "desc": "The address of the person who will request the asset insurance evaluation"
+        }
+      ],
+      "desc": "Creates the contract with initial addresses",
+      "returns": {
+        "type": "void",
+        "desc": "void"
+      }
+    },
+    {
+      "name": "registerAsset",
+      "args": [
+        {
+          "name": "assetName",
+          "type": "string",
+          "desc": "The name of the asset to insure"
+        },
+        {
+          "name": "assetType",
+          "type": "string",
+          "desc": "The type of the asset to insure"
+        },
+        {
+          "name": "assetValue",
+          "type": "uint64",
+          "desc": ""
+        },
+        {
+          "name": "assetDescription",
+          "type": "string",
+          "desc": ""
+        }
+      ],
+      "desc": "Allows customer to register an asset for insurance",
+      "returns": {
+        "type": "void",
+        "desc": ""
+      }
+    },
+    {
+      "name": "reviewRequest",
+      "args": [
+        {
+          "name": "acceptance",
+          "type": "bool",
+          "desc": "The boolean value of whether the asset is accepted or not"
+        },
+        {
+          "name": "comments",
+          "type": "string",
+          "desc": ""
+        }
+      ],
+      "desc": "Allows customer to register an asset for insurance",
+      "returns": {
+        "type": "void",
+        "desc": "void"
+      }
+    },
+    {
+      "name": "receiveToken",
+      "args": [
+        {
+          "name": "asaId",
+          "type": "asset",
+          "desc": "The ID of the ASA to receive"
+        },
+        {
+          "name": "optin",
+          "type": "axfer",
+          "desc": "The optin transaction to receive the ASA"
+        }
+      ],
+      "desc": "Allows customer to register an asset for insurance",
+      "returns": {
+        "type": "void",
+        "desc": "void"
+      }
+    }
+  ]
+}
