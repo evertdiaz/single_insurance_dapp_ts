@@ -4,7 +4,7 @@
 
 Here you will find a complete example on how to create an application where a customer can request and receive an insurance for specific assets, this application follows the next system flow including the actors and functions inside of it:
 
-![Single insurance diagram](https://raw.githubusercontent.com/evertdiaz/single_insurance_dapp_ts/main/respurces/single_insurance_diagram.png "Single insurance diagram")
+![Single insurance diagram](https://github.com/evertdiaz/single_insurance_dapp_ts/blob/main/resources/single_insurance_diagram.png?raw=true "Single insurance diagram")
 
 ## Main files to look at
 
